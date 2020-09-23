@@ -207,15 +207,19 @@ export default class App extends Component {
             </div>
             <div>
               <div>TOP PLAYERS :</div>
-              {this.state.topPlayer.map((item, index) => {
-                if (index < 3 && item.score > 0) {
-                  return (
-                    <div>
-                      {item.player} - Score: {item.score}
-                    </div>
-                  );
-                }
-              })}
+              {!this.stage.topPlayer ? (
+                <div>loading</div>
+              ) : (
+                this.state.topPlayer.map((item, index) => {
+                  if (index < 3 && item.score > 0) {
+                    return (
+                      <div>
+                        {item.player} - Score: {item.score}
+                      </div>
+                    );
+                  }
+                })
+              )}
             </div>
           </div>
         </div>
