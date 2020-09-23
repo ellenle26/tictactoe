@@ -76,7 +76,7 @@ export default class App extends Component {
       "score",
       `${Math.round((this.state.endTime - this.state.startTime) / 1000)}`
     );
-    const url = `http://ftw-highscores.herokuapp.com/tictactoe-dev`;
+    const url = `https://ftw-highscores.herokuapp.com/tictactoe-dev`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -89,7 +89,7 @@ export default class App extends Component {
   };
 
   getData = async () => {
-    let url = `http://ftw-highscores.herokuapp.com/tictactoe-dev`;
+    let url = `https://ftw-highscores.herokuapp.com/tictactoe-dev`;
     let response = await fetch(url);
     let data = await response.json();
     this.setState({ ...this.state, topPlayer: data.items });
