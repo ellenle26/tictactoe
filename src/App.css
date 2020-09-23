@@ -8,15 +8,18 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
 }
 
 .historyBttn {
-  width: 450px;
+  width: 315px;
   display: flex;
   flex-wrap: wrap;
 }
 
 .history {
   margin: 40px;
+  display: flex;
+  flex-direction: column;
 }

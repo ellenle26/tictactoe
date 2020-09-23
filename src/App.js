@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import FacebookLogin from "react-facebook-login";
 import "./App.css";
 import Board from "./components/board/Board.js";
 
@@ -11,6 +12,11 @@ export default class App extends Component {
       player: "X",
       winner: null,
       history: [],
+      isSignIn: false,
+      fbName: "",
+      startTime: Number,
+      endTime: Number,
+      topPlayer: [],
     };
   }
 
@@ -28,7 +34,8 @@ export default class App extends Component {
     for (let i = 0; i < winPosition.length; i++) {
       const [a, b, c] = winPosition[i];
       if (list[a] && list[a] === list[b] && list[a] === list[c]) {
-        this.setState({ winner: list[a] });
+        this.setState({ winner: list[a], endTime: Date.now() });
+
         return;
       }
     }
@@ -55,8 +62,41 @@ export default class App extends Component {
       historyArray.push(array);
       this.checkWinner(this.state.squareList);
       this.setState({ history: [...historyArray] });
-      console.log("his", this.state.history);
+      if (historyArray.length === 1) {
+        this.setState({ startTime: Date.now() });
+      }
     }
+  };
+
+  postData = async () => {
+    let data = new URLSearchParams();
+    data.append("player", `${this.state.fbName}`);
+    data.append(
+      "score",
+      `${Math.round((this.state.endTime - this.state.startTime) / 1000)}`
+    );
+    const url = `http://ftw-highscores.herokuapp.com/tictactoe-dev`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: data.toString(),
+      json: true,
+    });
+    console.log("response", response, "data", this.getData());
+  };
+
+  getData = async () => {
+    let url = `http://ftw-highscores.herokuapp.com/tictactoe-dev`;
+    let response = await fetch(url);
+    let data = await response.json();
+    this.setState({ ...this.state, topPlayer: data.items });
+  };
+
+  responseFacebook = (response) => {
+    console.log(response);
+    this.setState({ isSignIn: true, fbName: response.name });
   };
 
   render() {
@@ -72,29 +112,52 @@ export default class App extends Component {
             />
           </div>
           <div className="history">
-            <button
-              onClick={() =>
-                this.setState({
-                  squareList: [
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                  ],
-                  isXNext: true,
-                  player: "X",
-                  winner: null,
-                  history: [],
-                })
-              }
-            >
-              Reset Game
-            </button>
+            {this.state.isSignIn ? (
+              <div style={{ fontSize: "20px" }}>
+                User name : {this.state.fbName}
+              </div>
+            ) : (
+              <FacebookLogin
+                appId="326095395310539"
+                autoLoad={false}
+                fields="name,email,picture"
+                callback={(res) => this.responseFacebook(res)}
+              />
+            )}
+            <div>
+              <button
+                style={{ width: "fit-content", marginTop: "30px" }}
+                onClick={() => this.postData()}
+              >
+                Send Data
+              </button>
+              <button
+                style={{ width: "fit-content", marginTop: "30px" }}
+                onClick={() =>
+                  this.setState({
+                    squareList: [
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                    ],
+                    isXNext: true,
+                    player: "X",
+                    winner: null,
+                    history: [],
+                    startTime: Number,
+                    endTime: Number,
+                  })
+                }
+              >
+                RESTART GAME
+              </button>
+            </div>
             <div>History Board:</div>
             <div className="historyBttn">
               {this.state.history &&
@@ -104,35 +167,21 @@ export default class App extends Component {
                       onClick={() => {
                         this.setState({
                           squareList: [...item],
+                          isXNext: index % 2 === 1,
                         });
+                        this.state.isXNext
+                          ? this.setState({ player: "O" })
+                          : this.setState({ player: "X" });
                         let newHistory = this.state.history.slice(0, index + 1);
-                        console.log(
-                          "newHis",
-                          newHistory,
-                          "oldhis",
-                          this.state.history
-                        );
-                        if (index % 2 === 0) {
-                          if (index === newHistory.length - 1) {
-                            this.setState({
-                              history: [...newHistory],
-                            });
-                          }
+                        if (index === newHistory.length - 1) {
                           this.setState({
                             history: [...newHistory],
-                            isXNext: this.state.isXNext,
-                          });
-                        } else {
-                          if (index === newHistory.length - 1) {
-                            this.setState({
-                              history: [...newHistory],
-                            });
-                          }
-                          this.setState({
-                            history: [...newHistory],
-                            isXNext: !this.state.isXNext,
                           });
                         }
+                        this.setState({
+                          history: [...newHistory],
+                        });
+
                         if (this.state.winner) {
                           this.setState({ history: [] });
                         }
@@ -143,14 +192,29 @@ export default class App extends Component {
                   );
                 })}
             </div>
-            <div style={{ fontSize: "50px", color: "yellowgreen" }}>
+            <div style={{ fontSize: "40px", color: "yellowgreen" }}>
               {this.state.winner ? (
                 <div>
-                  <u>{this.state.winner} won </u>
+                  <u>{this.state.winner} won </u> - Score : &nbsp;
+                  {Math.round(
+                    (this.state.endTime - this.state.startTime) / 1000
+                  )}
                 </div>
               ) : (
-                <div></div>
+                <></>
               )}
+            </div>
+            <div>
+              <div>TOP PLAYERS :</div>
+              {this.state.topPlayer.map((item, index) => {
+                if (index < 3 && item.score > 0) {
+                  return (
+                    <div>
+                      {item.player} - Score: {item.score}
+                    </div>
+                  );
+                }
+              })}
             </div>
           </div>
         </div>

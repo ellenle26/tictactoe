@@ -2,7 +2,6 @@
 
 body {
   margin: 0;
-  padding: 30px;
   font-family: "Baloo Tammudu 2", cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -13,4 +12,8 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+button {
+  font-family: "Baloo Tammudu 2", cursive;
 }
