@@ -3,6 +3,7 @@ import FacebookLogin from "react-facebook-login";
 import "./App.css";
 import Board from "./components/board/Board.js";
 
+let appID = process.env.REACT_APP_APPKEY;
 export default class App extends Component {
   constructor(props) {
     super();
@@ -118,7 +119,7 @@ export default class App extends Component {
               </div>
             ) : (
               <FacebookLogin
-                appId="326095395310539"
+                appId={appID}
                 autoLoad={false}
                 fields="name,email,picture"
                 callback={(res) => this.responseFacebook(res)}
