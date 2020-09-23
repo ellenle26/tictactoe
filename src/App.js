@@ -8,6 +8,7 @@ export default class App extends Component {
     this.state = {
       squareList: [null, null, null, null, null, null, null, null, null],
       isXNext: true,
+      player: "X",
       winner: null,
       history: [],
     };
@@ -35,7 +36,7 @@ export default class App extends Component {
 
   squareClicked = (id) => {
     if (this.state.winner) {
-      alert("we have winner already");
+      alert(`${this.state.winner} had won. Please restart game!`);
     } else {
       let array = this.state.squareList;
       if (!(array[id] == null)) {
@@ -60,25 +61,99 @@ export default class App extends Component {
 
   render() {
     return (
-      <div>
-        <div>Next player : {this.state.player}</div>
-        <div>
-          Winner:
-          {this.state.winner}
+      <div className="page">
+        <div style={{ fontSize: "40px" }}>TIC-TAC-TOE</div>
+        <div className="mainSection">
+          <div>
+            <div style={{ fontSize: "25px" }}>{this.state.player} turn</div>
+            <Board
+              squareClicked={this.squareClicked}
+              squareList={this.state.squareList}
+            />
+          </div>
+          <div className="history">
+            <button
+              onClick={() =>
+                this.setState({
+                  squareList: [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                  ],
+                  isXNext: true,
+                  player: "X",
+                  winner: null,
+                  history: [],
+                })
+              }
+            >
+              Reset Game
+            </button>
+            <div>History Board:</div>
+            <div className="historyBttn">
+              {this.state.history &&
+                this.state.history.map((item, index) => {
+                  return (
+                    <button
+                      onClick={() => {
+                        this.setState({
+                          squareList: [...item],
+                        });
+                        let newHistory = this.state.history.slice(0, index + 1);
+                        console.log(
+                          "newHis",
+                          newHistory,
+                          "oldhis",
+                          this.state.history
+                        );
+                        if (index % 2 === 0) {
+                          if (index === newHistory.length - 1) {
+                            this.setState({
+                              history: [...newHistory],
+                            });
+                          }
+                          this.setState({
+                            history: [...newHistory],
+                            isXNext: this.state.isXNext,
+                          });
+                        } else {
+                          if (index === newHistory.length - 1) {
+                            this.setState({
+                              history: [...newHistory],
+                            });
+                          }
+                          this.setState({
+                            history: [...newHistory],
+                            isXNext: !this.state.isXNext,
+                          });
+                        }
+                        if (this.state.winner) {
+                          this.setState({ history: [] });
+                        }
+                      }}
+                    >
+                      Go to move #{index + 1}
+                    </button>
+                  );
+                })}
+            </div>
+            <div style={{ fontSize: "50px", color: "yellowgreen" }}>
+              {this.state.winner ? (
+                <div>
+                  <u>{this.state.winner} won </u>
+                </div>
+              ) : (
+                <div></div>
+              )}
+            </div>
+          </div>
         </div>
-        <Board
-          squareClicked={this.squareClicked}
-          squareList={this.state.squareList}
-        />
-        <div>History :</div>
-        {this.state.history &&
-          this.state.history.map((item, index) => {
-            return (
-              <button onClick={() => this.setState({ squareList: item })}>
-                Go to move #{index + 1}
-              </button>
-            );
-          })}
       </div>
     );
   }

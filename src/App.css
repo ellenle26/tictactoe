@@ -1,0 +1,22 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.mainSection {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.historyBttn {
+  width: 450px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.history {
+  margin: 40px;
+}

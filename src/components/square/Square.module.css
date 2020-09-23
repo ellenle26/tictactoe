@@ -1,5 +1,10 @@
 .squareBox {
   width: 150px;
   height: 150px;
-  border: solid 1px black;
+  border: solid 2px white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  font-weight: bolder;
 }
